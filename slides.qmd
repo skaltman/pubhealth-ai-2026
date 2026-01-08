@@ -76,6 +76,8 @@ Most LLMs are accessible through HTTP APIs
 ### R
 
 ```r
+library(ellmer)
+
 chat <- chat("anthropic")
 chat$chat("Summarize Picasso's style in 5 words")
 ```
@@ -83,7 +85,9 @@ chat$chat("Summarize Picasso's style in 5 words")
 ### Python
 
 ```python
-chat = ChatAnthropic()
+import chatlas as ctl
+
+chat = ctl.ChatAnthropic()
 chat.chat("Summarize Picasso's style in 5 words")
 ```
 
@@ -105,7 +109,7 @@ chat$chat("Summarize Picasso's style in 5 words")
 ### Python
 
 ```python
-chat = ChatAnthropic()
+chat = ctl.ChatAnthropic()
 chat.chat("Summarize Picasso's style in 5 words")
 ```
 
@@ -278,10 +282,11 @@ chat <- chat(
 ### Python
 
 ```python
-chat = ChatAnthropic(
-  system_prompt=
-    "You are a data analyst assistant "
-    "who answers as briefly as possible."
+chat = ctl.ChatAnthropic(
+    system_prompt="""
+    You are a data analyst assistant
+    who answers as briefly as possible.
+    """
 )
 ```
 
@@ -298,14 +303,14 @@ chat = ChatAnthropic(
 ## Store prompts in markdown files
 
 ::: {style="--code-font-size: 0.75em"}
-```{.r code-line-numbers="|2-4|8"}
+```{.r filename="script.R" code-line-numbers="|2-4|8"}
 system_prompt <- paste(
   "You answer questions about our trial protocol:",
   readr::read_file("protocol-excerpt.md"),
   collapse = "\n"
 )
 
-chat <- 
+chat <-
   chat("anthropic", system_prompt = system_prompt)
 ```
 :::
@@ -339,7 +344,7 @@ following criteria will be excluded:
 ##
 
 ::: {style="--code-font-size: 0.6em"}
-```{.r}
+```{.r filename="script.R"}
 chat$chat("Can we enroll a 76-year-old patient with HbA1c of 9.5%?")
 ```
 :::
@@ -426,10 +431,10 @@ This one also fails - the model can't access real-time weather data. No internet
 :::
 
 ::: {style="--code-font-size: 0.78em"}
-```{.r}
+```{.r filename="script.R"}
 chat <- chat("anthropic")
 
-chat$chat("What's the weather like in Foster City?")
+chat$chat("What's the weather like in Seattle?")
 ```
 :::
 
@@ -439,7 +444,7 @@ chat$chat("What's the weather like in Foster City?")
 ```{.markdown code-line-numbers="false" style="border: none !important; box-shadow: none !important;"}
 I don't have access to real-time weather data, so
 I can't tell you the current weather conditions
-in Foster City, California.
+in Seattle, Washington.
 ```
 :::
 
@@ -450,10 +455,10 @@ This one also fails - the model can't access real-time weather data. No internet
 :::
 
 ::: {style="--code-font-size: 0.78em"}
-```{.r}
+```{.r filename="script.R"}
 chat <- chat("anthropic")
 
-chat$chat("What's the weather like in Foster City?")
+chat$chat("What's the weather like in Seattle?")
 ```
 :::
 
@@ -462,7 +467,7 @@ chat$chat("What's the weather like in Foster City?")
 ```{.markdown code-line-numbers="false" style="border: none !important; box-shadow: none !important;"}
 I don't have access to real-time weather data, so
 I can't tell you the current weather conditions
-in Foster City, California.
+in Seattle, Washington.
 ```
 
 ## <span style="color: white;">Or the ability to affect the world</span>
@@ -472,7 +477,7 @@ But this one... the model actually gives an answer! It's wrong (the date is from
 :::
 
 ::: {style="--code-font-size: 0.9em"}
-```{.r}
+```{.r filename="script.R"}
 chat <- chat("anthropic")
 
 chat$chat("write df to data/data.csv")
@@ -499,7 +504,7 @@ or the ability to affect the world
 :::
 
 ::: {style="--code-font-size: 0.9em"}
-```{.r}
+```{.r filename="script.R"}
 chat <- chat("anthropic")
 
 chat$chat("write df to data/data.csv")
@@ -536,13 +541,9 @@ They can also give the model new abilities to take action on behalf of the user.
 
 ## Tool = function + metadata
 
-::: {.panel-tabset}
-
-### R
-
-```r
+```{.r filename="script.R"}
 get_weather <- tool(
-  \(lat, lon) point_forecast(lat, lon),
+  \(lat, lon) weathR::point_forecast(lat, lon),
   name = "get_weather",
   description = "Get the weather for a location.",
   arguments = list(
@@ -553,20 +554,6 @@ get_weather <- tool(
 
 chat$register_tool(get_weather)
 ```
-
-### Python
-
-```python
-def get_weather(lat: float, lon: float):
-  "Get the weather for a location."
-  return point_forecast(lat, lon)
-
-# Type hints + docstring = metadata!
-
-chat.register_tool(get_weather)
-```
-
-:::
 
 ::: {.notes}
 - Here's how to create a tool in ellmer and chatlas
@@ -579,8 +566,8 @@ chat.register_tool(get_weather)
 ## Now the model can tell us the weather
 
 ::: {style="--code-font-size: 0.75em"}
-```{.r}
-chat$chat("What's the weather in Foster City?")
+```{.r filename="script.R"}
+chat$chat("What's the weather in Seattle?")
 ```
 :::
 
@@ -588,16 +575,16 @@ chat$chat("What's the weather in Foster City?")
 
 ::: {.fragment style="font-size: 0.75em"}
 ```{.markdown code-line-numbers="false" style="border: none !important; box-shadow: none !important;" code-line-numbers="1|2-4|5-10"}
-◯ [tool call] get_weather(lat = 37.5585, lon = -122.2711)
-● #> [{"time":"2025-11-06 10:00:00 PST","temp":58,"dewpoint":12.2222,...
-Here's the current weather forecast for Foster City, California:
+◯ [tool call] get_weather(lat = 47.6062, lon = -122.3321)
+● #> [{"time":"2026-01-07 16:00:00 PST","temp":42,"dewpoint":3.8889,"humidity":88,"p_r…
+Here's the current weather for Seattle:
 
-**Current Conditions (as of 10 PM PST):**
-- Temperature: 58°F
-- Conditions: Partly Cloudy
-- Humidity: 87%
-- Wind: 6 mph from the Northwest
-- Very low chance of rain (4%)
+**Current Conditions (4:00 PM PST):**
+- **Temperature:** 42°F
+- **Conditions:** Chance of rain and snow showers
+- **Humidity:** 88%
+- **Wind:** SSW at 10 mph
+- **Chance of precipitation:** 44%
 ```
 :::
 
@@ -649,6 +636,12 @@ Photo by <a href="https://unsplash.com/@houston100?utm_source=unsplash&utm_mediu
 you might feel apprehensive like this cat, but also curious
 you've heard they can do cool things, but also that they hallucinate, etc
 :::
+
+## Tool calling with chatlas
+
+Tool calling in Python works similarly. Read about it here:
+
+<https://posit-dev.github.io/chatlas/tool-calling/how-it-works.html>
 
 # [What are LLMs good for?]{.ph5 .pv3 style="background-color: rgba(255, 255, 255);"} {.no-invert-dark-mode background-image="images/yoonjae-baik-p7MsAMLSbbU-unsplash.jpg" background-size="cover" background-position="center"}
 
@@ -846,6 +839,22 @@ make sure your tools are working as you want
 
 ::: {.notes}
 - The model doesn't remember you, but the provider's servers might
+:::
+
+## Where does your data go?
+
+![](images/trust-diagram-1.svg){style="display: block; margin-left: auto; margin-right: auto; max-width: 90%;"}
+
+::: {.notes}
+- Start with Positron - your local environment with your data
+:::
+
+## Where does your data go?
+
+![](images/trust-diagram-2.svg){style="display: block; margin-left: auto; margin-right: auto; max-width: 90%;"}
+
+::: {.notes}
+- Data flows to the model provider when you make a request
 :::
 
 ## Where does your data go?
