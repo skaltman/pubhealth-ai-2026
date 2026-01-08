@@ -130,7 +130,8 @@
 <g transform="translate(26.41183878628874 566.1393275021613) rotate(0 297.2144482357588 70.74383775705667)">
 <text x="0" y="19.944102740469408" font-family="sans-serif" font-size="20px" fill="#1971c2" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="alphabetic">Databot and Positron Assistant have access to your</text>
 <text x="0" y="44.944102740469408" font-family="sans-serif" font-size="20px" fill="#1971c2" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="alphabetic">console, session, and files so that they can help you </text>
-<text x="0" y="69.944102740469408" font-family="sans-serif" font-size="20px" fill="#1971c2" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="alphabetic">with your data science tasks.</text>
+<text x="0" y="69.944102740469408" font-family="sans-serif" font-size="20px" fill="#1971c2" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="alphabetic">with your data science tasks, but none of your data</text>
+<text x="0" y="94.944102740469408" font-family="sans-serif" font-size="20px" fill="#1971c2" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="alphabetic">is stored anywhere.</text>
 </g>
 
 </svg>

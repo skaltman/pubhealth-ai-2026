@@ -22,6 +22,14 @@ source("_incremental_slides.R")
 [**PubHealth AI** | January 8, 2026]{style="color: #495057; display: block;"}
 :::
 
+## Today's agenda
+
+1. Getting started with ellmer and chatlas
+2. Adding knowledge with system prompts
+3. Tool calling
+4. AI tools for data analysis
+5. Privacy & security
+
 ## Getting started 
 
 Most LLMs are accessible through HTTP APIs
@@ -54,11 +62,11 @@ Most LLMs are accessible through HTTP APIs
 
 ## Three steps to get started
 
-1. Acquire an API key
+1. Acquire an API key (or other way to authenticate)
 
-2. Add API key to your environment variables
+2. Add API key to `.Renviron` or `.env`
 
-3. Install ellmer: `install.packages("ellmer")`
+3. Install ellmer/chatlas: `install.packages("ellmer")` / `pip install chatlas`
 
 ::: {.notes}
 - Three simple steps to get started with ellmer
@@ -71,138 +79,128 @@ Most LLMs are accessible through HTTP APIs
 
 ## Basic chat
 
-::: {.panel-tabset}
-
-### R
-
-```r
+```{.r filename="script.R" code-line-numbers="|1|3|4"}
 library(ellmer)
 
 chat <- chat("anthropic")
 chat$chat("Summarize Picasso's style in 5 words")
 ```
 
-### Python
+::: {.notes}
+- Hello world of ellmer
+- Load the package, create a chat object, call the chat method
+:::
 
-```python
+## Basic chat
+
+```{.python filename="script.py" code-line-numbers="|1|3|4"}
 import chatlas as ctl
 
 chat = ctl.ChatAnthropic()
 chat.chat("Summarize Picasso's style in 5 words")
 ```
 
+::: {.notes}
+- Same pattern in Python with chatlas
+- Use provider-specific classes like ChatAnthropic()
 :::
 
 ## Basic chat
 
-::: {.panel-tabset}
+```{.r filename="script.R"}
+library(ellmer)
 
-### R
-
-```r
 chat <- chat("anthropic")
 chat$chat("Summarize Picasso's style in 5 words")
 ```
 
 *"Cubist, abstract, fragmented, revolutionary, expressive."*
 
-### Python
+## Basic chat
 
-```python
+```{.python filename="script.py"}
+import chatlas as ctl
+
 chat = ctl.ChatAnthropic()
 chat.chat("Summarize Picasso's style in 5 words")
 ```
 
 *"Cubist, abstract, fragmented, revolutionary, expressive."*
 
-:::
+## Basic chat
+
+Continue the conversation:
+
+```{.r filename="script.R"}
+chat$chat("Now Georgia O'Keeffe")
+```
 
 ## Basic chat
 
 Continue the conversation:
 
-::: {.panel-tabset}
-
-### R
-
-```r
-chat$chat("Now Georgia O'Keeffe")
-```
-
-### Python
-
-```python
+```{.python filename="script.py"}
 chat.chat("Now Georgia O'Keeffe")
 ```
-
-:::
 
 ## Basic chat
 
 Continue the conversation:
 
-::: {.panel-tabset}
-
-### R
-
-```r
+```{.r filename="script.R"}
 chat$chat("Now Georgia O'Keeffe")
 ```
 
 *"Organic, magnified, minimalist, nature-focused, colorful."*
-
-### Python
-
-```python
-chat.chat("Now Georgia O'Keeffe")
-```
-
-*"Organic, magnified, minimalist, nature-focused, colorful."*
-
-:::
 
 ::: {.notes}
-- Hello world of ellmer and chatlas
-- Two lines of code in both languages
-- Create chat object - R uses chat() with provider string, Python uses provider-specific classes
-- Call chat method and get response
 - Each subsequent call continues the conversation
+- The chat object maintains history
+- APIs are nearly identical between R and Python
+:::
+
+## Basic chat
+
+Continue the conversation:
+
+```{.python filename="script.py"}
+chat.chat("Now Georgia O'Keeffe")
+```
+
+*"Organic, magnified, minimalist, nature-focused, colorful."*
+
+::: {.notes}
+- Each subsequent call continues the conversation
+- The chat object maintains history
 - APIs are nearly identical between R and Python
 :::
 
 ## Switching providers or models
 
-::: {.panel-tabset}
-
-### R
-
-```r
+```{.r filename="script.R"}
 chat <- chat("google_gemini")
-```
 
-```r
 chat <- chat("openai/gpt-5")
-```
 
-```r
 chat <- chat("aws_bedrock")
 ```
 
-### Python
+::: {.notes}
+- Both ellmer and chatlas make it easy to switch providers
+- R uses chat() with provider string, Python uses provider-specific classes
+- Can specify models inline
+- Same patterns - easy to work in either language
+:::
 
-```python
+## Switching providers or models
+
+```{.python filename="script.py"}
 chat = ctl.ChatGoogle()
-```
 
-```python
 chat = ctl.ChatOpenAI(model="gpt-5")
-```
 
-```python
 chat = ctl.ChatBedrock()
 ```
-
-:::
 
 ::: {.notes}
 - Both ellmer and chatlas make it easy to switch providers
@@ -266,11 +264,7 @@ Not fine-tuning or RAG
 
 ## System prompts
 
-::: {.panel-tabset}
-
-### R
-
-```r
+```{.r filename="script.R"}
 chat <- chat(
   "anthropic",
   system_prompt =
@@ -279,9 +273,17 @@ chat <- chat(
 )
 ```
 
-### Python
+::: {.notes}
+- System prompts customize how the model behaves
+- Set the system_prompt argument when creating a chat
+- Here we're telling it to be a data analyst who answers briefly
+- System prompts persist across the entire conversation
+- Same pattern in both R and Python
+:::
 
-```python
+## System prompts
+
+```{.python filename="script.py"}
 chat = ctl.ChatAnthropic(
     system_prompt="""
     You are a data analyst assistant
@@ -289,8 +291,6 @@ chat = ctl.ChatAnthropic(
     """
 )
 ```
-
-:::
 
 ::: {.notes}
 - System prompts customize how the model behaves
@@ -450,10 +450,6 @@ in Seattle, Washington.
 
 ## LLMs don't have access to real-time data
 
-::: notes
-This one also fails - the model can't access real-time weather data. No internet connection.
-:::
-
 ::: {style="--code-font-size: 0.78em"}
 ```{.r filename="script.R"}
 chat <- chat("anthropic")
@@ -470,11 +466,12 @@ I can't tell you the current weather conditions
 in Seattle, Washington.
 ```
 
-## <span style="color: white;">Or the ability to affect the world</span>
-
 ::: notes
-But this one... the model actually gives an answer! It's wrong (the date is from its training cutoff), but it shows the model will try to answer with what it knows.
+- The model can't access real-time weather data
+- No internet connection - it only knows what was in its training data
 :::
+
+## <span style="color: white;">Or the ability to affect the world</span>
 
 ::: {style="--code-font-size: 0.9em"}
 ```{.r filename="script.R"}
@@ -541,7 +538,7 @@ They can also give the model new abilities to take action on behalf of the user.
 
 ## Tool = function + metadata
 
-```{.r filename="script.R"}
+```{.r filename="script.R" code-line-numbers="|1|1-2|3-4|5-8|11"}
 get_weather <- tool(
   \(lat, lon) weathR::point_forecast(lat, lon),
   name = "get_weather",
@@ -574,7 +571,7 @@ chat$chat("What's the weather in Seattle?")
 <br>
 
 ::: {.fragment style="font-size: 0.75em"}
-```{.markdown code-line-numbers="false" style="border: none !important; box-shadow: none !important;" code-line-numbers="1|2-4|5-10"}
+```{.markdown code-line-numbers="false" style="border: none !important; box-shadow: none !important;" code-line-numbers="1|2|3-10"}
 ◯ [tool call] get_weather(lat = 47.6062, lon = -122.3321)
 ● #> [{"time":"2026-01-07 16:00:00 PST","temp":42,"dewpoint":3.8889,"humidity":88,"p_r…
 Here's the current weather for Seattle:
@@ -590,15 +587,10 @@ Here's the current weather for Seattle:
 
 
 ::: notes
-Let's look at how to create and use a tool.
-
-First, we define a tool using the `tool()` function. It wraps an R function and adds metadata - a name, description, and argument definitions. This metadata helps the LLM understand when and how to use the tool.
-
-The tool itself is just an R function that calls weathR to get weather data.
-
-Then we register the tool with our chat object using `register_tool()`.
-
-Now when we ask about what to wear, the LLM can call the weather tool to get real-time data!
+- Now when we ask about the weather, the LLM calls our tool
+- It figured out the lat/lon for Seattle on its own
+- The tool returns real data, and the model formats it nicely
+- This is the power of tools - real-time information the model couldn't access before
 :::
 
 ## The LLM can't run code by itself!
@@ -626,6 +618,12 @@ The LLM controls:
 - This keeps you in control of what happens
 :::
 
+## Tool calling with chatlas
+
+Tool calling in Python works similarly. Read about it here:
+
+<https://posit-dev.github.io/chatlas/tool-calling/how-it-works.html>
+
 # {.title-push-down .no-invert-dark-mode background-image="images/yoonjae-baik-p7MsAMLSbbU-unsplash.jpg" background-size="cover" background-position="center"}
 
 ::: footer
@@ -636,12 +634,6 @@ Photo by <a href="https://unsplash.com/@houston100?utm_source=unsplash&utm_mediu
 you might feel apprehensive like this cat, but also curious
 you've heard they can do cool things, but also that they hallucinate, etc
 :::
-
-## Tool calling with chatlas
-
-Tool calling in Python works similarly. Read about it here:
-
-<https://posit-dev.github.io/chatlas/tool-calling/how-it-works.html>
 
 # [What are LLMs good for?]{.ph5 .pv3 style="background-color: rgba(255, 255, 255);"} {.no-invert-dark-mode background-image="images/yoonjae-baik-p7MsAMLSbbU-unsplash.jpg" background-size="cover" background-position="center"}
 
@@ -829,13 +821,15 @@ make sure your tools are working as you want
 
 ## Model providers vs. LLMs
 
+::: {.incremental}
 * **Provider:** The company that hosts the model (Anthropic, OpenAI, Google, etc. Could also be something like HuggingFace)
 
-* **LLM:** The actual model that generates responses to your queries.   
+* **LLM:** The actual model that generates responses to your queries.
 
-* LLMs are **stateless.** They have no memory of your prior requests. 
+* LLMs are **stateless.** They have no memory of your prior requests.
 
-* However, the model provider may **log and store** your requests and use them for other purposes. 
+* However, the model provider may **log and store** your requests and use them for other purposes.
+::: 
 
 ::: {.notes}
 - The model doesn't remember you, but the provider's servers might
