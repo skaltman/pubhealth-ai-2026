@@ -822,7 +822,7 @@ make sure your tools are working as you want
 ## Model providers vs. LLMs
 
 ::: {.incremental}
-* **Provider:** The company that hosts the model (Anthropic, OpenAI, Google, etc. Could also be something like HuggingFace)
+* **Provider:** The company that hosts the model (Anthropic, OpenAI, Google, Hugging Face, etc.).
 
 * **LLM:** The actual model that generates responses to your queries.
 
