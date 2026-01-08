@@ -19,7 +19,7 @@ source("_incremental_slides.R")
 [**Sara Altman**]{style="color: #2c3e50; display: block; margin-bottom: 0.1em; font-size: 1.1em;"}
 [Senior Developer Advocate, Posit]{style="color: #6c757d; display: block; margin-bottom: 0.6em;"}
 
-[**Pubhealth AI** | January 8, 2026]{style="color: #495057; display: block;"}
+[**PubHealth AI** | January 8, 2026]{style="color: #495057; display: block;"}
 :::
 
 ## Getting started 
