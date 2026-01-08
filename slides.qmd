@@ -191,15 +191,15 @@ chat <- chat("aws_bedrock")
 ### Python
 
 ```python
-chat = ChatGoogle()
+chat = ctl.ChatGoogle()
 ```
 
 ```python
-chat = ChatOpenAI(model="gpt-5")
+chat = ctl.ChatOpenAI(model="gpt-5")
 ```
 
 ```python
-chat = ChatBedrock()
+chat = ctl.ChatBedrock()
 ```
 
 :::
@@ -532,7 +532,7 @@ systems directly.
 ::: notes
 So how do we solve these problems? Tools! Also called functions or function calling.
 
-Tools are extra capabilities that you give to the LLM, like the ability to search the BBSW 2025 schedule or check the weather.
+Tools are extra capabilities that you give to the LLM, like the ability to check the weather or query a database.
 These capabilities are things that the model can't do on its own.
 The goal is to let the model pull in real-time or up-to-date information as needed.
 
@@ -808,7 +808,7 @@ make sure your tools are working as you want
 ::: {.incremental}
 * Positron Assistant and Databot can execute arbitrary code and see your files
 
-* They incorporate your this information into queries sent to the LLM
+* They incorporate this information into queries sent to the LLM
 
 * This raises important questions about privacy
 :::
